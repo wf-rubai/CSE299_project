@@ -1,7 +1,9 @@
 <img id="camera_feed" width="320" height="240">
 
 <script>
-let ws = new WebSocket("ws://192.168.68.101:8000/ws/camera/");
+let ws = new WebSocket("ws://db1be2652977.ngrok-free.app/ws/camera/");
+
+ws.onopen = () => console.log("Connected to WebSocket!");
 
 ws.onmessage = function(event) {
     let img = document.getElementById("camera_feed");

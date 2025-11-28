@@ -10,6 +10,31 @@ EOF
 ---
 
 
+---
+* need to use local ip on:
+    ino code: ws_server_host 
+    port: 8000
+
+* in 3 terminals run these three lines:
+
+daphne server.asgi.application -b 192.168.68.101 -p 8000
+
+python manage.py runserver 192.168.68.101:8100
+
+ngrok http 192.168.68.101:8000
+
+*need to change the puiblic ip of ngrok in the webPage file with out the http part
+
+---
+
+
+
+
+
+
+
+
+
 Excellent — now it’s completely clear what you’re building 👏
 You want a **remote robot (Pi Zero)** controlled from your **laptop** over different networks, using:
 
