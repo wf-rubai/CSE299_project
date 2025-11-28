@@ -1,0 +1,10 @@
+<img id="camera_feed" width="320" height="240">
+
+<script>
+let ws = new WebSocket("ws://192.168.68.101:8000/ws/camera/");
+
+ws.onmessage = function(event) {
+    let img = document.getElementById("camera_feed");
+    img.src = "data:image/jpeg;base64," + event.data;
+};
+</script>
