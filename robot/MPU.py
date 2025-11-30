@@ -95,3 +95,42 @@ while True:
     print(f"Pitch={pitch:.2f}  Roll={roll:.2f}  Yaw={yaw:.2f}")
     time.sleep(0.01)
 
+
+
+
+# ------------------------------ POSITION TRACKING ------------------------------
+x = 0.0
+y = 0.0
+vx = 0.0
+vy = 0.0
+
+def get_position(dt, ax, ay, az, pitch, roll):
+    global x, y, vx, vy
+
+    # Convert degrees → radians
+    pr = math.radians(pitch)
+    rr = math.radians(roll)
+
+    # Rotate accelerometer readings from body frame to world frame
+    # Only using pitch + roll (no yaw correction)
+    ax_world = ax * math.cos(pr) + az * math.sin(pr)
+    ay_world = ay * math.cos(rr) + az * math.sin(rr)
+
+    # Remove gravity influence (already partly handled through tilt)
+    # MPU6050 gravity = 1.0g
+    ax_world -= 0.0  
+    ay_world -= 0.0  
+
+    # Convert g → m/s^2 (optional)
+    ax_ms = ax_world * 9.81
+    ay_ms = ay_world * 9.81
+
+    # Integrate acceleration → velocity
+    vx += ax_ms * dt
+    vy += ay_ms * dt
+
+    # Integrate velocity → position
+    x += vx * dt
+    y += vy * dt
+
+    return x, y
