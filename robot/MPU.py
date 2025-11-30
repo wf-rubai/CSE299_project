@@ -98,39 +98,133 @@ while True:
 
 
 
-# ------------------------------ POSITION TRACKING ------------------------------
+import smbus
+import time
+import math
+
+# ------------------ MPU SETUP ------------------
+bus = smbus.SMBus(1)
+ADDR = 0x68
+bus.write_byte_data(ADDR, 0x6B, 0)
+
+ACCEL_XOUT_H = 0x3B
+GYRO_XOUT_H  = 0x43
+
+def read_word(reg):
+    high = bus.read_byte_data(ADDR, reg)
+    low  = bus.read_byte_data(ADDR, reg+1)
+    val = (high << 8) | low
+    if val > 32767: val -= 65536
+    return val
+
+# ------------------ OFFSETS (CALIBRATE ON START) ------------------
+print("Calibrating MPU6050...")
+time.sleep(2)
+
+ax_off = ay_off = az_off = 0
+gx_off = gy_off = gz_off = 0
+samples = 200
+
+for i in range(samples):
+    ax_off += read_word(ACCEL_XOUT_H)
+    ay_off += read_word(ACCEL_XOUT_H+2)
+    az_off += read_word(ACCEL_XOUT_H+4)
+    gx_off += read_word(GYRO_XOUT_H)
+    gy_off += read_word(GYRO_XOUT_H+2)
+    gz_off += read_word(GYRO_XOUT_H+4)
+    time.sleep(0.005)
+
+ax_off /= samples
+ay_off /= samples
+az_off = (az_off / samples) - 16384   # remove gravity
+gx_off /= samples
+gy_off /= samples
+gz_off /= samples
+
+print("Calibration complete.")
+
+# ------------------ STATE VARIABLES ------------------
+pitch = 0.0
+roll  = 0.0
+yaw   = 0.0
+
 x = 0.0
 y = 0.0
 vx = 0.0
 vy = 0.0
 
-def get_position(dt, ax, ay, az, pitch, roll):
-    global x, y, vx, vy
+last_t = time.time()
 
-    # Convert degrees → radians
+
+# ======================================================
+#               MAIN POSITION FUNCTION
+# ======================================================
+def get_xy():
+    global pitch, roll, yaw
+    global x, y, vx, vy
+    global last_t
+
+    # ---- time delta ----
+    now = time.time()
+    dt = now - last_t
+    last_t = now
+
+    # ---- read raw ----
+    ax = read_word(ACCEL_XOUT_H)   - ax_off
+    ay = read_word(ACCEL_XOUT_H+2) - ay_off
+    az = read_word(ACCEL_XOUT_H+4) - az_off
+    gx = read_word(GYRO_XOUT_H)    - gx_off
+    gy = read_word(GYRO_XOUT_H+2)  - gy_off
+    gz = read_word(GYRO_XOUT_H+4)  - gz_off
+
+    # ---- convert units ----
+    ax /= 16384.0
+    ay /= 16384.0
+    az /= 16384.0
+    gx /= 131.0
+    gy /= 131.0
+    gz /= 131.0
+
+    # ---- accel angles ----
+    accel_pitch = math.degrees(math.atan2(ax, math.sqrt(ay**2 + az**2)))
+    accel_roll  = math.degrees(math.atan2(ay, math.sqrt(ax**2 + az**2)))
+
+    # ---- integrate gyro ----
+    pitch += gx * dt
+    roll  += gy * dt
+    yaw   += gz * dt
+
+    # ---- complementary filter ----
+    alpha = 0.98
+    pitch = alpha*pitch + (1-alpha)*accel_pitch
+    roll  = alpha*roll  + (1-alpha)*accel_roll
+
+    # ---- convert pitch/roll to radians ----
     pr = math.radians(pitch)
     rr = math.radians(roll)
 
-    # Rotate accelerometer readings from body frame to world frame
-    # Only using pitch + roll (no yaw correction)
+    # ---- rotate local accel to world X/Y ----
     ax_world = ax * math.cos(pr) + az * math.sin(pr)
     ay_world = ay * math.cos(rr) + az * math.sin(rr)
 
-    # Remove gravity influence (already partly handled through tilt)
-    # MPU6050 gravity = 1.0g
-    ax_world -= 0.0  
-    ay_world -= 0.0  
-
-    # Convert g → m/s^2 (optional)
+    # convert g → m/s²
     ax_ms = ax_world * 9.81
     ay_ms = ay_world * 9.81
 
-    # Integrate acceleration → velocity
+    # ---- integrate acceleration → velocity ----
     vx += ax_ms * dt
     vy += ay_ms * dt
 
-    # Integrate velocity → position
+    # ---- integrate velocity → position ----
     x += vx * dt
     y += vy * dt
 
-    return x, y
+    return x, y   # meters (approx!)
+
+# ======================================================
+# Usage example:
+# ======================================================
+# while True:
+#     xc, yc = get_xy()
+#     print(f"X={xc:.3f} m   Y={yc:.3f} m")
+#     time.sleep(0.01)

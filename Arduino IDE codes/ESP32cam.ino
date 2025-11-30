@@ -93,7 +93,6 @@ void setup() {
 
   // Connect to WebSocket server
   webSocket.begin(ws_server_host, ws_server_port, ws_server_path);
-  //webSocket.setExtraHeaders("Host: 8f803c3ffa21.ngrok-free.app"); // sometimes needed
   webSocket.onEvent(webSocketEvent);
   webSocket.setReconnectInterval(5000);  // auto-reconnect every 5s
 }
