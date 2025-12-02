@@ -3,12 +3,12 @@ import time
 
 GPIO.setmode(GPIO.BCM)
 
-pins = [23, 26]
+pins = [12, 13]
 for pin in pins:
     GPIO.setup(pin, GPIO.OUT)
 
-pwmA = GPIO.PWM(23, 10000)  # PWM1A
-pwmB = GPIO.PWM(26, 10000)  # PWM1B
+pwmA = GPIO.PWM(12, 10000)  # PWM1A
+pwmB = GPIO.PWM(13, 10000)  # PWM1B
 
 pwmA.start(0)
 pwmB.start(0)
