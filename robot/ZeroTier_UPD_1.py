@@ -3,10 +3,11 @@ import socket, threading, time
 import RPi.GPIO as GPIO
 import smbus, math
 from gpiozero import DistanceSensor
+from adafruit_servokit import ServoKit
 
-# ------------------------
+# -----------------------------
 # Laptop ZeroTier IP
-# ------------------------
+# -----------------------------
 MAC_IP = "192.168.192.218"  
 PI_PORT = 6000
 MAC_PORT  = 6001
@@ -14,16 +15,19 @@ MAC_PORT  = 6001
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(("0.0.0.0", PI_PORT))
 
-# ---------------------------
-# Setup motors and sensors
-# ---------------------------
+# -----------------------------
+# Setup motors
+# -----------------------------
 GPIO.setmode(GPIO.BCM)
-motors = [17,27,22,10,12,13]
+motors = [17,27,22,10]
 for p in motors: GPIO.setup(p, GPIO.OUT)
 
-# ---------------
+# -----------------------------
 # PWM setup
-# ---------------
+# -----------------------------
+GPIO.setup(12, GPIO.OUT)
+GPIO.setup(13, GPIO.OUT)
+
 PWM_freq = 10000
 PWM_duty = 25
 
@@ -33,10 +37,26 @@ pwmB = GPIO.PWM(13, PWM_freq)  # PWM1B
 pwmA.start(PWM_duty)
 pwmB.start(PWM_duty)
 
-# ------------------------
+# -----------------------------
+# Servo setup
+# -----------------------------
+kit = ServoKit(channels=16)
+kit.frequency = 50
+
+SERVO1 = 0      # PCA9685 channel 0 | vertical
+SERVO2 = 1      # PCA9685 channel 1 | horizontal
+
+vartical_angle = 90
+horizontal_angle = 90
+
+kit.servo[SERVO1].angle = vartical_angle
+kit.servo[SERVO2].angle = horizontal_angle
+
+# -----------------------------
 # Sonar and MPU6050 setup
-# ------------------------
+# -----------------------------
 ultra = DistanceSensor(echo=24, trigger=23)
+
 bus = smbus.SMBus(1)
 ADDR = 0x68
 bus.write_byte_data(ADDR, 0x6B, 0)
@@ -52,9 +72,9 @@ def read_word(reg):
         val -= 65536
     return val
 
-# ------------------------
+# -----------------------------
 # MPU6050 Calibration
-# ------------------------
+# -----------------------------
 print("Calibrating MPU6050...")
 time.sleep(2)
 
@@ -91,9 +111,9 @@ vy = 0.0
 
 last_t = time.time()
 
-# ------------------------
+# -----------------------------
 # X, Y coordinates
-# ------------------------
+# -----------------------------
 def get_xy():
     global pitch, roll, yaw
     global x, y, vx, vy
@@ -167,10 +187,11 @@ def telemetry_loop():
         sock.sendto(msg.encode(), (MAC_IP, MAC_PORT))
         time.sleep(0.2)
 
-# ---------------------
+# -----------------------------
 # Control Loop
-# ---------------------
+# -----------------------------
 def control_loop():
+    global vartical_angle, horizontal_angle
     while True:
         data, _ = sock.recvfrom(64)
         cmd = data.decode().lower()
@@ -184,6 +205,18 @@ def control_loop():
             GPIO.output(motors, (0,1,1,0))
         elif cmd == 'd':
             GPIO.output(motors, (1,0,0,1))
+        elif cmd == 'U':
+            vartical_angle = min(170, vartical_angle + 1)
+            kit.servo[SERVO1].angle = vartical_angle
+        elif cmd == 'D':
+            vartical_angle = max(10, vartical_angle - 1)
+            kit.servo[SERVO1].angle = vartical_angle
+        elif cmd == 'L':
+            horizontal_angle = min(170, horizontal_angle + 1)
+            kit.servo[SERVO2].angle = horizontal_angle
+        elif cmd == 'R':
+            horizontal_angle = max(10, horizontal_angle - 1)
+            kit.servo[SERVO2].angle = horizontal_angle
         else:
             GPIO.output(motors, (0,0,0,0))
 
