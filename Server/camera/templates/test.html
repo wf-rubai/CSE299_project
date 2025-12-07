@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ESP32-CAM Control Panel</title>
+<style>
+    body {
+        background: #121212;
+        color: #e0e0e0;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 300;
+        color: #00e5ff;
+    }
+
+    #container {
+        max-width: 600px;
+        margin: auto;
+        background: #1e1e1e;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 0px 15px rgba(0,0,0,0.7);
+    }
+
+    #camera_feed {
+        width: 100%;
+        border-radius: 10px;
+        border: 2px solid #00bcd4;
+        margin-bottom: 15px;
+    }
+
+    .control-group {
+        margin: 12px 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        color: #80deea;
+    }
+
+    select, input[type=range] {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        background: #263238;
+        border: 1px solid #00acc1;
+        color: #eee;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        background: #00bcd4;
+        color: #000;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: #4dd0e1;
+    }
+</style>
+</head>
+<body>
+
+<h1>ESP32-CAM CONTROL PANEL</h1>
+
+<div id="container">
+
+    <img id="camera_feed">
+
+    <div class="control-group">
+        <label>Resolution</label>
+        <select id="framesize">
+            <option value="QQVGA">160 × 120</option>
+            <option value="QQVGA2">128 × 160</option>
+            <option value="QVGA" selected>320 × 240</option>
+            <option value="CIF">352 × 288</option>
+            <option value="VGA">640 × 480</option>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label>JPEG Quality (Higher = More compression)</label>
+        <input type="range" id="quality" min="10" max="63" value="30">
+    </div>
+
+    <div class="control-group">
+        <label>Brightness</label>
+        <input type="range" id="brightness" min="-2" max="2" value="0">
+    </div>
+
+    <div class="control-group">
+        <label>Contrast</label>
+        <input type="range" id="contrast" min="-2" max="2" value="0">
+    </div>
+
+    <div class="control-group">
+        <label>FPS (Delay Control)</label>
+        <select id="fps">
+            <option value="25">40 FPS</option>
+            <option value="33">30 FPS</option>
+            <option value="50">20 FPS</option>
+            <option value="100">10 FPS</option>
+        </select>
+    </div>
+
+    <button onclick="applySettings()">Apply Settings</button>
+</div>
+
+<script>
+// ==== WEBSOCKET STREAM ====
+let ws = new WebSocket("ws://db1be2652977.ngrok-free.app/ws/camera/");
+ws.onopen = () => console.log("WebSocket connected!");
+ws.onmessage = e => {
+    document.getElementById("camera_feed").src = "data:image/jpeg;base64," + e.data;
+};
+
+// ==== SEND SETTINGS TO ESP32 ====
+function applySettings() {
+    let camIP = "192.168.68.118";   // CHANGE TO YOUR ESP32 LOCAL IP
+
+    let f = document.getElementById("framesize").value;
+    let q = document.getElementById("quality").value;
+    let b = document.getElementById("brightness").value;
+    let c = document.getElementById("contrast").value;
+    let fpsDelay = document.getElementById("fps").value;
+
+    let url = `http://${camIP}/set?framesize=${f}&quality=${q}&brightness=${b}&contrast=${c}&fps=${fpsDelay}`;
+
+    fetch(url)
+      .then(() => alert("Settings applied!"))
+      .catch(() => alert("Failed to reach ESP32!"));
+}
+</script>
+
+</body>
+</html>

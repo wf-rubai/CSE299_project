@@ -169,8 +169,6 @@ def recv_telemetry():
         data, _ = telemetry_sock.recvfrom(1024)
         text = data.decode(errors='ignore')
         last_telemetry = text
-        # also print to console
-        print("Telemetry:", text)
 
 telemetry_thread = threading.Thread(target=recv_telemetry, daemon=True)
 telemetry_thread.start()
@@ -215,7 +213,7 @@ while running:
             elif event.key == pygame.K_UP:
                 current_key = 'U'
             elif event.key == pygame.K_DOWN:
-                current_key = 'D'
+                current_key = 'B'
             elif event.key == pygame.K_LEFT:
                 current_key = 'L'
             elif event.key == pygame.K_RIGHT:
@@ -224,13 +222,22 @@ while running:
             elif event.key in (pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d):
                 current_key = event.unicode  # 'w','a','s','d'
             else:
-                current_key = None
+                current_key = 'x'
         elif event.type == pygame.KEYUP:
-            current_key = None
+            current_key = 'x'
 
     # --- joystick handling (if present) ---
     if joystick is not None:
         pygame.event.pump()
+        
+        if event.type == pygame.JOYBUTTONDOWN:
+            if event.button == 5:
+                mic_on = not mic_on
+                speaker_on = not speaker_on
+                while pygame.event.peek(pygame.JOYBUTTONUP) is False:
+                    pass
+                mic_on = not mic_on
+                speaker_on = not speaker_on
         # Safe get axes with try/except (some joysticks have fewer axes)
         try:
             axis_0 = joystick.get_axis(0)  # left stick horiz
@@ -242,19 +249,19 @@ while running:
 
         # Map joystick to commands:
         # Left stick controls robot movement: up -> w, down -> s, left -> a, right -> d
-        if abs(axis_1) > 0.3:
-            current_key = 'w' if axis_1 < 0 else 's'
-        elif abs(axis_0) > 0.3:
-            current_key = 'a' if axis_0 < 0 else 'd'
-        # Right stick controls camera: up/down/left/right -> U/D/L/R
-        elif abs(axis_3) > 0.3:
-            current_key = 'D' if axis_3 < 0 else 'U'
+        if abs(axis_3) > 0.3:
+            current_key = 'w' if axis_3 < 0 else 's'
         elif abs(axis_2) > 0.3:
-            current_key = 'R' if axis_2 < 0 else 'L'
+            current_key = 'a' if axis_2 < 0 else 'd'
+        # Right stick controls camera: up/down/left/right -> U/D/L/R
+        elif abs(axis_1) > 0.3:
+            current_key = 'U' if axis_1 < 0 else 'B'
+        elif abs(axis_0) > 0.3:
+            current_key = 'L' if axis_0 < 0 else 'R'
         else:
             # no stick displacement
-            current_key = None
-
+            current_key = 'x'
+            
     # --- send command if present ---
     if current_key:
         send_control(current_key)

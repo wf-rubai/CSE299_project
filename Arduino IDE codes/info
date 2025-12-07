@@ -1,0 +1,205 @@
+Great — your WebSocket streaming code is correct, but you want **runtime-adjustable camera settings** (resolution, quality, brightness, contrast, frame size, etc.) just like the **ESP32-CAM Example Web UI**.
+
+That is possible.
+Below I will:
+
+---
+
+# ✅ **Add support for dynamic camera settings**
+
+You will be able to change:
+
+* **Resolution (framesize)**
+* **JPEG quality**
+* **Brightness**
+* **Contrast**
+* **Saturation**
+* **Special effects**
+* **White balance**
+* **Exposure**
+* **Gain**
+* **Color mode**
+* **Vertical/H-mirror**
+* **XCLK / FPS change (limited)**
+
+---
+
+# ⚠️ **IMPORTANT**
+
+Some camera settings **cannot be changed after esp_camera_init()**, especially:
+
+* pixel_format
+* xclk_freq_hz
+* pin assignment
+
+But **resolution and quality CAN be changed anytime**.
+
+---
+
+# ✅ **UPDATED CODE — with dynamic camera configuration API**
+
+### ⭐ Adds a small HTTP server where you can send commands:
+
+Example:
+
+```
+http://<ESP-IP>/set?framesize=QVGA
+http://<ESP-IP>/set?framesize=QQVGA2
+http://<ESP-IP>/set?quality=30
+http://<ESP-IP>/set?brightness=-2
+```
+
+### Supported framesize names:
+
+| Name     | Resolution |
+| -------- | ---------- |
+| `QQVGA`  | 160×120    |
+| `QQVGA2` | 128×160    |
+| `HQVGA`  | 240×176    |
+| `QVGA`   | 320×240    |
+| `CIF`    | 352×288    |
+| `VGA`    | 640×480    |
+| `SVGA`   | 800×600    |
+
+---
+
+# ✅ **FULL CODE WITH DYNAMIC CAMERA SETTINGS**
+
+Paste this **above your loop()**.
+
+🌟 → *Works with your WebSocket transmitter*
+🌟 → *Allows you to lower resolution anytime*
+
+---
+
+### 🔧 **Add this HTTP server + settings parser**
+
+```cpp
+#include <WebServer.h>
+
+WebServer server(80);
+
+void handleSet() {
+  if (!server.hasArg("framesize") && !server.hasArg("quality")) {
+    server.send(400, "text/plain", "Missing parameters");
+    return;
+  }
+
+  sensor_t* s = esp_camera_sensor_get();
+
+  // Frame size change
+  if (server.hasArg("framesize")) {
+    String fs = server.arg("framesize");
+    framesize_t size;
+
+    if (fs == "QQVGA") size = FRAMESIZE_QQVGA;      // 160x120
+    else if (fs == "QQVGA2") size = FRAMESIZE_QQVGA2; // 128x160
+    else if (fs == "HQVGA") size = FRAMESIZE_HQVGA;  // 240x176
+    else if (fs == "QVGA") size = FRAMESIZE_QVGA;    // 320x240
+    else if (fs == "CIF") size = FRAMESIZE_CIF;      // 352x288
+    else if (fs == "VGA") size = FRAMESIZE_VGA;      // 640x480
+    else {
+      server.send(400, "text/plain", "Invalid framesize");
+      return;
+    }
+
+    s->set_framesize(s, size);
+  }
+
+  // Quality change
+  if (server.hasArg("quality")) {
+    int q = server.arg("quality").toInt();  // 10–63
+    if (q < 10) q = 10;
+    if (q > 63) q = 63;
+    s->set_quality(s, q);
+  }
+
+  // Brightness
+  if (server.hasArg("brightness")) {
+    int b = server.arg("brightness").toInt();  // -2 to 2
+    s->set_brightness(s, b);
+  }
+
+  // Contrast
+  if (server.hasArg("contrast")) {
+    int c = server.arg("contrast").toInt();  // -2 to 2
+    s->set_contrast(s, c);
+  }
+
+  // Saturation
+  if (server.hasArg("saturation")) {
+    int sa = server.arg("saturation").toInt(); // -2 to 2
+    s->set_saturation(s, sa);
+  }
+
+  server.send(200, "text/plain", "OK");
+}
+
+void startCommandServer() {
+  server.on("/set", handleSet);
+  server.begin();
+  Serial.println("Camera control server started!");
+}
+```
+
+---
+
+# 🔧 **Modify setup() — add this at the end**
+
+```cpp
+startCommandServer();
+```
+
+---
+
+# 🔧 **Modify loop() — add this**
+
+```cpp
+server.handleClient();  // process HTTP commands
+```
+
+---
+
+# 🎉 **NOW YOU CAN CONTROL CAMERA SETTINGS LIVE**
+
+## 📌 Change resolution to very low (fastest video):
+
+```
+http://<ESP-IP>/set?framesize=QQVGA
+```
+
+## 📌 Even lower bitrate:
+
+```
+http://<ESP-IP>/set?quality=40
+```
+
+## 📌 Make it extremely lightweight:
+
+```
+http://<ESP-IP>/set?framesize=QQVGA2&quality=50
+```
+
+---
+
+# ⭐ WHAT THIS GIVES YOU
+
+✔ Change resolution **without reboot**
+✔ Change JPEG compression **runtime**
+✔ Tune brightness/contrast for dark rooms
+✔ Reduce size to improve WebSocket FPS
+✔ FPS improves automatically with lower resolution
+
+---
+
+# If you want:
+
+I can also add:
+
+✅ Adjust XCLK for framerate
+✅ Add a Web UI like ESP32 original camera example
+✅ Add a dropdown menu instead of URLs
+✔ Convert the stream to **raw grayscale** to reduce size even more
+✔ Add auto-restart if WiFi drops
+
+Just tell me what you want next.
