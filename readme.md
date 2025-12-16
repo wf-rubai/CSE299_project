@@ -15,6 +15,7 @@
    ├── INMP441 (I²S mic)
    ├── Audio amp + 3 W speaker (PWM audio out)
    └── ZeroTier + UDP + ffmpeg
+```
 
 ### Pin connection
 
