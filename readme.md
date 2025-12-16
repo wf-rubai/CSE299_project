@@ -17,15 +17,15 @@
    └── ZeroTier + UDP + ffmpeg
 ```
 
-## Pin connection
+---
+
+## 📌 Pin connection
 
 Perfect — that’s exactly the right step before wiring your robot.
 Here’s a **clean, ready-to-build pin planning table** for your **Raspberry Pi Zero** robot setup.
 It includes **each component**, **its pin name**, **which Pi GPIO pin it connects to**, and **the voltage** required.
 
----
-
-### ⚙️ Raspberry Pi Zero Pin Connection Table
+### Raspberry Pi Zero Pin Connection Table
 
 | **Component**                           | **Component Pin Name**                 | **Connect to Raspberry Pi Pin (BCM No. / Physical Pin)**      | **Voltage / Notes**                                                       |
 | --------------------------------------- | -------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -57,9 +57,7 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 |                                         | **ENA / ENB**                          | 5 V or PWM GPIOs                                              | Use 5 V if always enabled, or connect to PWM pins for speed control       |
 | **ESP32-CAM**                           | Connect separately to 5 V power source (e.g., USB or 5 V pin on Pi with ample current) | —             | **5 V** required; Pi Zero’s 5 V pin can supply small current (~1 A total) |
 
----
-
-### ⚡ Voltage summary
+### Voltage summary
 
 | **Device**                | **Power Voltage** | **Current Draw (approx.)**                     |
 | ------------------------- | ----------------- | ---------------------------------------------- |
