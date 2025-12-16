@@ -1,4 +1,4 @@
-### ⚙️ System Overview
+## ⚙️ System Overview
 
 ```
    Laptop (control + monitor)
@@ -17,7 +17,7 @@
    └── ZeroTier + UDP + ffmpeg
 ```
 
-### Pin connection
+## Pin connection
 
 Perfect — that’s exactly the right step before wiring your robot.
 Here’s a **clean, ready-to-build pin planning table** for your **Raspberry Pi Zero** robot setup.
@@ -25,7 +25,7 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 
 ---
 
-## ⚙️ Raspberry Pi Zero Pin Connection Table
+### ⚙️ Raspberry Pi Zero Pin Connection Table
 
 | **Component**                           | **Component Pin Name**                 | **Connect to Raspberry Pi Pin (BCM No. / Physical Pin)**      | **Voltage / Notes**                                                       |
 | --------------------------------------- | -------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -59,7 +59,7 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 
 ---
 
-## ⚡ Voltage summary
+### ⚡ Voltage summary
 
 | **Device**                | **Power Voltage** | **Current Draw (approx.)**                     |
 | ------------------------- | ----------------- | ---------------------------------------------- |
@@ -73,7 +73,7 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 
 ---
 
-### 🛜 Server informations
+## 🛜 Server informations
 
 Network ID: 68BEA79ACF6E42FA
 Check IP: zerotier-cli listnetworks
@@ -89,8 +89,8 @@ EOF
 ---
 
 * need to use local ip on:
-   ├── ino code: ws_server_host 
-   └──  port: 8000
+** ino code: ws_server_host 
+**  port: 8000
 
 * in 3 terminals run these three lines:
 
