@@ -90,12 +90,12 @@ EOF
 ---
 
 ### ECP32 Cam setup
-* Need to use local ip on:
+* Need to use local ip of the server in the ino file:
    - **ws_server_host:** `server_ip`
    - **port:** `8000`
 
 ### Websocket server run
-* Check your server ip
+* Check your server ip:
    - For windows and linux: `ipconfig`
    - For Mac: `ifconfig`
 
@@ -110,4 +110,4 @@ ngrok http server_ip:8000
 
 ```
 
-* need to change the puiblic ip of ngrok in the webPage file without the http part
+* Need to change the puiblic ip of `ngrok` in the `webPage` file without the http part
