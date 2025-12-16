@@ -75,25 +75,36 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 
 ## 🛜 Server informations
 
-Network ID: 68BEA79ACF6E42FA
-Check IP: zerotier-cli listnetworks
+### ZiroTier info:
+* Network ID: 68BEA79ACF6E42FA
+* Check IP: zerotier-cli listnetworks
 
-Devices check:
-
+### Devices check:
+```bash
 python3 - << EOF
 import sounddevice as sd
 print(sd.query_devices())
 EOF
+```
 
 ---
----
 
+### ECP32 Cam setup
 * need to use local ip on:
-** ino code: ws_server_host 
-**  port: 8000
+- **ino code: ws_server_host**
+- **port: 8000**
 
+### Websocket server run
+* Check your server ip
+- For windows and linux
+```bash
+ipconfig
+```
+- For Mac
+```bach
+ifconfig
+```
 * in 3 terminals run these three lines:
-
 ```bash
 
 daphne server.asgi.application -b 192.168.68.101 -p 8000
