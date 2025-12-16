@@ -35,22 +35,18 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 |                                         | **LRCL (WS)**                          | GPIO 19 / Physical Pin 35                                     | I²S Left/Right Clock                                                      |
 |                                         | **DOUT**                               | GPIO 20 / Physical Pin 38                                     | I²S Data Input to Pi                                                      |
 |                                         | **L/R Select**                         | Connect to GND                                                | Select left channel                                                       |
-
 | **3 W Audio Amplifier (e.g. PAM8403)**  | **VIN / VCC**                          | 5 V (Physical Pin 2 or 4)                                     | Requires **5 V**                                                          |
 |                                         | **GND**                                | Any GND pin                                                   | Common ground                                                             |
 |                                         | **L-IN**                               | GPIO 13 / Physical Pin 33                                     | PWM Audio output from Pi                                                  |
 |                                         | **L-OUT / R-OUT**                      | Connect to 3 W speakers                                       | Output to speakers                                                        |
-
 | **HC-SR04 Ultrasonic Sensor**           | **VCC**                                | 5 V (Physical Pin 2 or 4)                                     | Needs **5 V**                                                             |
 |                                         | **GND**                                | Any GND pin                                                   | Common ground                                                             |
 |                                         | **Trig**                               | GPIO 23 / Physical Pin 16                                     | Output from Pi                                                            |
 |                                         | **Echo**                               | GPIO 24 / Physical Pin 18 (via voltage divider 1 kΩ + 2 kΩ)** | Echo pin is 5 V → must step down to 3.3 V for Pi input                    |
-
 | **MPU6050 (Accelerometer + Gyroscope)** | **VCC**                                | 3.3 V (Physical Pin 1 or 17)                                  | Use **3.3 V** (5 V also works on some modules but 3.3 V is safer)         |
 |                                         | **GND**                                | Any GND pin                                                   | Common ground                                                             |
 |                                         | **SDA**                                | GPIO 2 / Physical Pin 3                                       | I²C Data                                                                  |
 |                                         | **SCL**                                | GPIO 3 / Physical Pin 5                                       | I²C Clock                                                                 |
-
 | **Motor Driver (L293D / L298N)**        | **VCC1 (logic)**                       | 5 V (Physical Pin 2 or 4)                                     | Logic voltage                                                             |
 |                                         | **VCC2 (motor power)**                 | 5 V–9 V (from external battery)                               | Depends on motor voltage                                                  |
 |                                         | **GND**                                | Pi GND (shared)                                               | Common ground                                                             |
@@ -59,8 +55,7 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 |                                         | **IN3**                                | GPIO 22 / Physical Pin 15                                     | Motor B control                                                           |
 |                                         | **IN4**                                | GPIO 10 / Physical Pin 19                                     | Motor B control                                                           |
 |                                         | **ENA / ENB**                          | 5 V or PWM GPIOs                                              | Use 5 V if always enabled, or connect to PWM pins for speed control       |
-
-| **ESP32-CAM**                           | Connect separately to 5 V power source (e.g., USB or 5 V pin on Pi with ample current) | —                                                             | **5 V** required; Pi Zero’s 5 V pin can supply small current (~1 A total) |
+| **ESP32-CAM**                           | Connect separately to 5 V power source (e.g., USB or 5 V pin on Pi with ample current) | —             | **5 V** required; Pi Zero’s 5 V pin can supply small current (~1 A total) |
 
 ---
 
