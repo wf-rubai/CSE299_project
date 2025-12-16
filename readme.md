@@ -1,37 +1,4 @@
-Network ID: 68BEA79ACF6E42FA
-Check IP: zerotier-cli listnetworks
-
-Devices check:
-
-python3 - << EOF
-import sounddevice as sd
-print(sd.query_devices())
-EOF
-
----
----
-
-* need to use local ip on:
-    ino code: ws_server_host 
-    port: 8000
-
-* in 3 terminals run these three lines:
-
-```bash
-
-daphne server.asgi.application -b 192.168.68.101 -p 8000
-
-python manage.py runserver 192.168.68.101:8100
-
-ngrok http 192.168.68.101:8000
-
-```
-
-* need to change the puiblic ip of ngrok in the webPage file without the http part
-
----
-
-# ⚙️ 1. System Overview
+### ⚙️ System Overview
 
 ```
    Laptop (control + monitor)
@@ -48,31 +15,6 @@ ngrok http 192.168.68.101:8000
    ├── INMP441 (I²S mic)
    ├── Audio amp + 3 W speaker (PWM audio out)
    └── ZeroTier + UDP + ffmpeg
-
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
----
 
 ### Pin connection
 
@@ -135,29 +77,38 @@ It includes **each component**, **its pin name**, **which Pi GPIO pin it connect
 
 ---
 
-## 🧩 Important wiring notes
+### 🛜 Server informations
 
-1. **Common Ground:**
-   All components **must share GND** with the Pi (including external motor battery ground).
+Network ID: 68BEA79ACF6E42FA
+Check IP: zerotier-cli listnetworks
 
-2. **Ultrasonic Echo pin:**
-   Must be **voltage divided** using 1 kΩ + 2 kΩ resistors:
+Devices check:
 
-   ```
-   Echo(5V) ---[2kΩ]---+---(GPIO24)
-                        |
-                      [1kΩ]
-                        |
-                       GND
-   ```
+python3 - << EOF
+import sounddevice as sd
+print(sd.query_devices())
+EOF
 
-3. **Audio Amplifier:**
-   Use **PWM pin GPIO13** → amplifier input.
-   Don’t connect the speaker directly to GPIO pins.
+---
+---
 
-4. **ESP32-CAM power:**
-   Needs stable **5 V** and **enough current** (use a separate USB power bank if necessary).
+* need to use local ip on:
+   ├── ino code: ws_server_host 
+   └──  port: 8000
+
+* in 3 terminals run these three lines:
+
+```bash
+
+daphne server.asgi.application -b 192.168.68.101 -p 8000
+
+python manage.py runserver 192.168.68.101:8100
+
+ngrok http 192.168.68.101:8000
+
+```
+
+* need to change the puiblic ip of ngrok in the webPage file without the http part
 
 ---
 
-Would you like me to also draw a **visual wiring diagram (schematic)** showing all connections (Pi Zero + sensors + audio + motor driver + ESP32-CAM) so you can double-check before building?
