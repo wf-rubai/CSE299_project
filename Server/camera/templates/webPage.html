@@ -1,12 +1,157 @@
-<img id="camera_feed" width="320" height="240">
+<html>
 
-<script>
-let ws = new WebSocket("ws://db1be2652977.ngrok-free.app/ws/camera/");
+<head>
+    <meta charset="UTF-8">
+    <title>ESP32-CAM Camera Feed</title>
+    <style>
+        body {
+            background: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-ws.onopen = () => console.log("Connected to WebSocket!");
+        .title {
+            margin-top: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
 
-ws.onmessage = function(event) {
-    let img = document.getElementById("camera_feed");
-    img.src = "data:image/jpeg;base64," + event.data;
-};
-</script>
+        .title img {
+            border: 4px solid #8BC34A;
+            box-shadow: 0px 0px 20px 3px #8bc34a6e;
+            width: 480px;
+            height: 360px;
+            border-radius: 20px;
+        }
+
+        .info-wrapper {
+            display: flex;
+            justify-content: space-between;
+            color: #ddd;
+            font-family: Arial, sans-serif;
+            width: -webkit-fill-available;
+            padding: 30px;
+            align-items: flex-start;
+        }
+
+        .dev-section {
+            display: grid;
+            /* grid-template-columns: 1fr 1fr;
+            gap: 40px; */
+        }
+
+        .dev {
+            display: flex;
+            gap: 20px;
+        }
+
+        .dev-card {
+            padding-left: 16px;
+            border-left: 3px solid #00bfff;
+        }
+
+        .dev-section h4 {
+            margin-bottom: 10px;
+            color: #00bfff;
+        }
+
+        .dev-name {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .dev-card p {
+            margin: 4px 0;
+            text-align: left;
+            color: #cccccc;
+        }
+
+        .sup-section {
+            text-align: right;
+            padding-right: 16px;
+            /* border-right: 3px solid #ff9800; */
+        }
+
+        .sup-card {
+            /* margin-left: auto; */
+            padding-right: 16px;
+            border-right: 3px solid #ff9800;
+        }
+
+        .sup-section h4 {
+            margin-bottom: 10px;
+            color: #ff9800;
+        }
+
+        .sup-name {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .sup-section p {
+            margin: 4px 0;
+            color: #cccccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <h2>Camera Feed</h2>
+
+        <img id="camera_feed">
+    </div>
+    <div class="info-wrapper">
+
+        <div class="dev-section">
+            <h4>Developer</h4>
+            <div class="dev">
+                <div class="dev-card">
+                    <p class="dev-name">Washio Ferdous</p>
+                    <p>washio.ferdous@northsouth.edu</p>
+                    <p>2231107042</p>
+                </div>
+
+                <div class="dev-card">
+                    <p class="dev-name">Nazifa Anjum</p>
+                    <p>nazifa.anjum@northsouth.edu</p>
+                    <p>2233406042</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supervisor -->
+        <div class="sup-section">
+            <h4>Supervisor</h4>
+            <div class="sup-card">
+                <p class="sup-name">Ms. Tanjila Farah</p>
+                <p>Senior Lecturer</p>
+                <p>Department of Electrical and Computer Engineering</p>
+                <p>North South University</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let ws = new WebSocket("ws://41ea5c242f70.ngrok-free.app/ws/camera/");
+
+        ws.onopen = () => console.log("Connected to WebSocket!");
+
+        ws.onmessage = function (event) {
+            let img = document.getElementById("camera_feed");
+            img.src = "data:image/jpeg;base64," + event.data;
+        };
+    </script>
+</body>
+
+</html>
