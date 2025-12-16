@@ -96,11 +96,11 @@ EOF
 
 ### Websocket server run
 * Check your server ip
-- For windows and linux
+   - For windows and linux
 ```bash
 ipconfig
 ```
-- For Mac
+   - For Mac
 ```bach
 ifconfig
 ```
@@ -116,6 +116,3 @@ ngrok http 192.168.68.101:8000
 ```
 
 * need to change the puiblic ip of ngrok in the webPage file without the http part
-
----
-
