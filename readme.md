@@ -87,8 +87,6 @@ print(sd.query_devices())
 EOF
 ```
 
----
-
 ### ECP32 Cam setup
 * Need to use local ip of the server in the ino file:
    - **ws_server_host:** `server_ip`
