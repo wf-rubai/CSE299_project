@@ -91,22 +91,22 @@ EOF
 
 ### ECP32 Cam setup
 * Need to use local ip on:
-   - **ino code: ws_server_host**
-   - **port: 8000**
+   - **ws_server_host:** `server_ip`
+   - **port:** `8000`
 
 ### Websocket server run
 * Check your server ip
-   - For windows and linux: **ipconfig**
-   - For Mac: **ifconfig**
+   - For windows and linux: `ipconfig`
+   - For Mac: `ifconfig`
 
 * In 3 terminals run these three lines:
 ```bash
 
-daphne server.asgi.application -b 192.168.68.101 -p 8000
+daphne server.asgi.application -b server_ip -p 8000
 
-python manage.py runserver 192.168.68.101:8100
+python manage.py runserver server_ip:8100
 
-ngrok http 192.168.68.101:8000
+ngrok http server_ip:8000
 
 ```
 
