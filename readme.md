@@ -90,21 +90,16 @@ EOF
 ---
 
 ### ECP32 Cam setup
-* need to use local ip on:
-- **ino code: ws_server_host**
-- **port: 8000**
+* Need to use local ip on:
+   - **ino code: ws_server_host**
+   - **port: 8000**
 
 ### Websocket server run
 * Check your server ip
-   - For windows and linux
-```bash
-ipconfig
-```
-   - For Mac
-```bach
-ifconfig
-```
-* in 3 terminals run these three lines:
+   - For windows and linux: **ipconfig**
+   - For Mac: **ifconfig**
+
+* In 3 terminals run these three lines:
 ```bash
 
 daphne server.asgi.application -b 192.168.68.101 -p 8000
